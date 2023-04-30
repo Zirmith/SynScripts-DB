@@ -131,10 +131,7 @@ router.post('/users/logout', async (req, res) => {
       const scriptText = script.scriptText;
       if (req.headers.accept === 'application/json') {
         const metadata = {
-          userid: script.userid,
           scriptId: script.scriptId,
-          createdOn: script.createdOn,
-          lastModifiedOn: script.lastModifiedOn
         };
         return res.status(200).json({
           metadata,
@@ -142,7 +139,7 @@ router.post('/users/logout', async (req, res) => {
         });
       } else {
         const title = `Script ${scriptId} by ${userid}`;
-        const description = `Script ${scriptId} by ${userid}. Uploaded on ${script.createdOn}. Last modified on ${script.lastModifiedOn}.`;
+        const description = `Script ${scriptId}, One of the many scripts hosted on ${api_name}`;
         const style = `
           body {
             background-color: #202225;
@@ -156,9 +153,9 @@ router.post('/users/logout', async (req, res) => {
           h1 {
             text-align: center;
           }
-          pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
+          .editor {
+            height: 500px;
+            margin-bottom: 20px;
           }
         `;
         const html = `
@@ -170,18 +167,32 @@ router.post('/users/logout', async (req, res) => {
               <meta name="robots" content="noindex, nofollow" />
               <meta property="og:title" content="${title}" />
               <meta property="og:description" content="${description}" />
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
             </head>
             <body>
               <div class="container">
-                <h1>${title}</h1>
-                <pre>${scriptText}</pre>
+                <div id="editor" class="editor"></div>
+                <button id="copy-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                  <i class="fas fa-copy"></i> Copy to Clipboard
+                </button>
               </div>
             </body>
             <style>${style}</style>
+            <script>
+              const editor = ace.edit("editor");
+              editor.setTheme("ace/theme/tomorrow_night_eighties");
+              editor.session.setMode("ace/mode/lua");
+              editor.setValue(${JSON.stringify(scriptText)});
+              const copyButton = document.getElementById("copy-button");
+              copyButton.addEventListener("click", () => {
+                navigator.clipboard.writeText(editor.getValue());
+              });
+            </script>
           </html>
         `;
         res.setHeader('Content-Type', 'text/html');
         return res.status(200).send(html);
+        
       }
     } catch (err) {
       console.error(err);
