@@ -104,7 +104,7 @@ router.post('/users/logout', async (req, res) => {
       const script = { userid, scriptId, scriptText };
       scripts.push(script);
       // Generate URL for script
-      const scriptUrl = `${firstpoint}users/${userid}/scripts/raw/${scriptId}`;
+      const scriptUrl = `https://synscripts.onrender.com${firstpoint}users/${userid}/scripts/raw/${scriptId}`;
       res.status(201).json({ url: scriptUrl });
   
       // Send webhook to Discord
