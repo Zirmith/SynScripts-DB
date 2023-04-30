@@ -2,13 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Config } = require('./config.js');
-
+const axios = require('axios');
+require('dotenv').config()
 const app = express();
 const router = express.Router();
 const firstpoint = Config.System.hostpoint;
 const api_name = Config.System.name;
 const port = Config.System.port;
-
+const WEBHOOK_ID = process.env.WEBID
+const WEBHOOK_TOKEN = process.env.WEBTOKEN
 console.log('firstpoint:', firstpoint); // Debugging statement
 
 app.use(cors());
@@ -79,6 +81,7 @@ router.post('/users/logout', async (req, res) => {
   });
   
 
+
   router.post('/users/:userid/scripts/upload', async (req, res) => {
     try {
       const { userid } = req.params;
@@ -95,7 +98,6 @@ router.post('/users/logout', async (req, res) => {
       if (!existingUser) {
         return res.status(401).json({ error: 'User not logged in' });
       }
-  
       // Upload script
       const scriptId = crypto.randomBytes(16).toString('hex');
       // Save script to database
@@ -104,11 +106,18 @@ router.post('/users/logout', async (req, res) => {
       // Generate URL for script
       const scriptUrl = `${firstpoint}users/${userid}/scripts/raw/${scriptId}`;
       res.status(201).json({ url: scriptUrl });
+  
+      // Send webhook to Discord
+      const webhookUrl = `https://discord.com/api/webhooks/${WEBHOOK_ID}/${WEBHOOK_TOKEN}`; // Replace with your webhook URL
+      const username = 'Script Logger'; // Replace with the username you want the webhook message to have
+      const message = `New script uploaded by user ${userid}: ${scriptUrl}`; // Customize the message content
+      await axios.post(webhookUrl, { username, content: message });
     } catch (err) {
       console.error(err);
       res.status(500).send('Internal server error');
     }
   });
+  
   
   
   router.get('/users/:userid/scripts/raw/:scriptId', async (req, res) => {

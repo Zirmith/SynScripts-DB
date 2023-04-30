@@ -19,9 +19,11 @@
   },
   "homepage": "https://github.com/Zirmith/SynScripts-DB#readme",
   "dependencies": {
+    "axios": "^1.4.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "http-proxy-middleware": "^2.0.6",
     "jsonwebtoken": "^9.0.0",
