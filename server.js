@@ -151,11 +151,11 @@ router.post('/users/logout', async (req, res) => {
   });
   
   
-  app.use('/', (req, res) => {
+  app.get('/', (req, res) => {
     res.send({online: true})
   })
 
-  app.use('/status', (req, res) => {
+  app.get('/status', (req, res) => {
     res.send({
         api: {
             ['User Server']: "Online",
