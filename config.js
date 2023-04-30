@@ -1,8 +1,8 @@
 const ModulesSettings = {
     Config: {
        System: {
-        name: "RoSynScripts",
-        hostpoint: "/Ro-Syn/",
+        name: "Syn_Scripts",
+        hostpoint: "/api/v1",
         port: 4000
        }
     }
