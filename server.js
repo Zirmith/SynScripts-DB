@@ -141,8 +141,47 @@ router.post('/users/logout', async (req, res) => {
           script: scriptText
         });
       } else {
-        res.setHeader('Content-Type', 'text/plain');
-        return res.status(200).send(scriptText);
+        const title = `Script ${scriptId} by ${userid}`;
+        const description = `Script ${scriptId} by ${userid}. Uploaded on ${script.createdOn}. Last modified on ${script.lastModifiedOn}.`;
+        const style = `
+          body {
+            background-color: #202225;
+            color: #d4d4d4;
+            font-family: Arial, Helvetica, sans-serif;
+          }
+          .container {
+            margin: auto;
+            max-width: 800px;
+          }
+          h1 {
+            text-align: center;
+          }
+          pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+          }
+        `;
+        const html = `
+          <!DOCTYPE html>
+          <html lang="en">
+            <head>
+              <meta charset="UTF-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <meta name="robots" content="noindex, nofollow" />
+              <meta property="og:title" content="${title}" />
+              <meta property="og:description" content="${description}" />
+            </head>
+            <body>
+              <div class="container">
+                <h1>${title}</h1>
+                <pre>${scriptText}</pre>
+              </div>
+            </body>
+            <style>${style}</style>
+          </html>
+        `;
+        res.setHeader('Content-Type', 'text/html');
+        return res.status(200).send(html);
       }
     } catch (err) {
       console.error(err);
@@ -156,14 +195,87 @@ router.post('/users/logout', async (req, res) => {
   })
 
   app.get('/status', (req, res) => {
-    res.send({
-        api: {
-            ['User Server']: "Online",
-            ['Script Server']: "Online",
-            ['Database Server']: "Half Working"
-        }
-    })
-  })
+    const title = 'API Status';
+    const description = 'Check the status of our servers here';
+    const status = {
+      ['User Server']: 'Online',
+      ['Script Server']: 'Online',
+      ['Database Server']: 'Half Working',
+    };
+  
+    const css = `
+      body {
+        background-color: #282c34;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+      }
+  
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px;
+      }
+  
+      h1 {
+        text-align: center;
+        margin-top: 0;
+      }
+  
+      .status {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-top: 40px;
+      }
+  
+      .status-item {
+        flex-basis: 30%;
+        text-align: center;
+        padding: 20px;
+        background-color: #1f2227;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+  
+      .status-item h2 {
+        margin-top: 0;
+      }
+    `;
+  
+    const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta name="robots" content="noindex, nofollow" />
+          <meta property="og:title" content="${title}" />
+          <meta property="og:description" content="${description}" />
+          <style>${css}</style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>${title}</h1>
+            <p>${description}</p>
+            <div class="status">
+              ${Object.entries(status)
+                .map(([name, value]) => `
+                  <div class="status-item">
+                    <h2>${name}</h2>
+                    <p>${value}</p>
+                  </div>
+                `)
+                .join('')}
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  
+    res.send(html);
+  });
   
 app.use(firstpoint, router);
 
