@@ -101,7 +101,8 @@ router.post('/users/logout', async (req, res) => {
       // Upload script
       const scriptId = crypto.randomBytes(16).toString('hex');
       // Save script to database
-      const script = { userid, scriptId, scriptText };
+      const script = { userid, scriptId, scriptText, createdOn: now.toISOString(),
+        lastModifiedOn: now.toISOString() };
       scripts.push(script);
       // Generate URL for script
       const scriptUrl = `https://synscripts.onrender.com${firstpoint}users/${userid}/scripts/raw/${scriptId}`;
@@ -138,24 +139,54 @@ router.post('/users/logout', async (req, res) => {
           script: scriptText
         });
       } else {
-        const title = `Script ${scriptId} by ${userid}`;
-        const description = `Script ${scriptId}, One of the many scripts hosted on ${api_name}`;
+        const title = `Script ${scriptId} by ${userid} | Code Hosting`;
+        const description = `View and share ${userid}'s Lua script ${scriptId} on ${api_name}. Uploaded on ${script.createdOn}. Last modified on ${script.lastModifiedOn}.`;
         const style = `
           body {
-            background-color: #202225;
+            background-color: #1e1e1e;
             color: #d4d4d4;
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           }
           .container {
-            margin: auto;
-            max-width: 800px;
+            margin: 50px auto;
+            max-width: 1000px;
+            padding: 20px;
+            border: 1px solid #2b2b2b;
+            border-radius: 5px;
+            box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.5);
           }
           h1 {
             text-align: center;
+            font-size: 36px;
+            margin-bottom: 30px;
           }
           .editor {
-            height: 500px;
+            height: 600px;
             margin-bottom: 20px;
+            border: 1px solid #2b2b2b;
+            border-radius: 5px;
+          }
+          .mdl-button {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+            color: #fff;
+            background-color: #0275d8;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+          }
+          .mdl-button:hover {
+            background-color: #025aa5;
+          }
+          .mdl-button:focus {
+            outline: none;
+          }
+          .mdl-button:active {
+            box-shadow: none;
+            transform: translateY(2px);
           }
         `;
         const html = `
@@ -168,12 +199,16 @@ router.post('/users/logout', async (req, res) => {
               <meta property="og:title" content="${title}" />
               <meta property="og:description" content="${description}" />
               <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+              <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+              <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+              <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-blue.min.css" />
+              <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
             </head>
             <body>
               <div class="container">
                 <div id="editor" class="editor"></div>
-                <button id="copy-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                  <i class="fas fa-copy"></i> Copy to Clipboard
+                <button id="copy-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                  <i class="material-icons">content_copy</i> Copy to Clipboard
                 </button>
               </div>
             </body>
