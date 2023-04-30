@@ -101,8 +101,8 @@ router.post('/users/logout', async (req, res) => {
       // Upload script
       const scriptId = crypto.randomBytes(16).toString('hex');
       // Save script to database
-      const script = { userid, scriptId, scriptText, createdOn: now.toISOString(),
-        lastModifiedOn: now.toISOString() };
+      const script = { userid, scriptId, scriptText, createdOn: Date.now(),
+        lastModifiedOn: Date.now() };
       scripts.push(script);
       // Generate URL for script
       const scriptUrl = `https://synscripts.onrender.com${firstpoint}users/${userid}/scripts/raw/${scriptId}`;
