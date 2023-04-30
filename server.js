@@ -142,7 +142,19 @@ router.post('/users/logout', async (req, res) => {
   });
   
   
-  
+  app.use('/', (req, res) => {
+    res.send({online: true})
+  })
+
+  app.use('/status', (req, res) => {
+    res.send({
+        api: {
+            ['User Server']: "Online",
+            ['Script Server']: "Online",
+            ['Database Server']: "Half Working"
+        }
+    })
+  })
   
 app.use(firstpoint, router);
 
